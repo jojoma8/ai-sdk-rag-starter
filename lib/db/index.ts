@@ -1,7 +1,11 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env } from "@/lib/env.mjs";
+import { env } from "process";
 
-const client = postgres(env.DATABASE_URL);
+const databaseUrl = env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL environment variable is not defined.");
+}
+
+const client = postgres(databaseUrl);
 export const db = drizzle(client);
-
