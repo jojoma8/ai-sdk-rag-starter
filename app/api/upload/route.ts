@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("Received text chunks:", chunks);
+    console.log("Received text chunks: ", chunks);
 
     for (const chunk of chunks) {
       await createResource({ content: chunk });
