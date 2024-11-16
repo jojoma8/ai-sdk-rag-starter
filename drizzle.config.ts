@@ -1,5 +1,5 @@
 import type { Config } from "drizzle-kit";
-import { env } from "@/lib/env.mjs";
+import { env } from "@/env.mjs";
 
 export default {
   schema: "./lib/db/schema",
@@ -7,5 +7,5 @@ export default {
   out: "./lib/db/migrations",
   dbCredentials: {
     url: env.DATABASE_URL,
-  }
+  },
 } satisfies Config;
