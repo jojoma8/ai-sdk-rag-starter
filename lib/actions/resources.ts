@@ -16,16 +16,17 @@ import {
 
 export const createResource = async (input: NewResourceParams) => {
   try {
-    const { content } = insertResourceSchema.parse(input);
+    const { fileId, content } = insertResourceSchema.parse(input);
 
     const [resource] = await db
       .insert(resources)
-      .values({ content })
+      .values({ fileId, content })
       .returning();
 
     const embeddings = await generateEmbeddings(content);
     await db.insert(embeddingsTable).values(
       embeddings.map((embedding) => ({
+        fileId,
         resourceId: resource.id,
         ...embedding,
       }))

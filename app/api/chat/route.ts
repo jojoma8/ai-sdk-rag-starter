@@ -4,6 +4,7 @@ import { z } from "zod";
 // import { findRelevantContent } from "@/lib/ai/embedding";
 import { createResource } from "@/actions/resources";
 import { findRelevantContent } from "@/ai/embedding";
+import { nanoid } from "nanoid";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -26,7 +27,10 @@ export async function POST(req: Request) {
             .string()
             .describe("the content or resource to add to the knowledge base"),
         }),
-        execute: async ({ content }) => createResource({ content }),
+        execute: async ({ content }) => {
+          const fileId = nanoid();
+          return createResource({ content, fileId });
+        },
       }),
       getInformation: tool({
         description: `get information from your knowledge base to answer questions.`,

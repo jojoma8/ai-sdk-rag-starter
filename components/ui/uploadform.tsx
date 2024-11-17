@@ -8,6 +8,8 @@ const UploadForm: React.FC = () => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [fileTitle, setFileTitle] = useState<string>("");
+  const [sourceUrl, setSourceUrl] = useState<string>("");
 
   if (typeof window !== "undefined" && "Worker" in window) {
     GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.js`;
@@ -33,6 +35,11 @@ const UploadForm: React.FC = () => {
       const url = URL.createObjectURL(selectedFile);
       setFileUrl(url);
 
+      // Extract the file name without the extension
+      const nameWithoutExtension = selectedFile.name.replace(/\.pdf$/i, "");
+      console.log("fileName", nameWithoutExtension);
+      // setFileTitle(nameWithoutExtension);
+
       try {
         const arrayBuffer = await selectedFile.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
@@ -55,7 +62,11 @@ const UploadForm: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ chunks: textChunks }),
+          body: JSON.stringify({
+            chunks: textChunks,
+            fileTitle: nameWithoutExtension,
+            sourceUrl,
+          }),
         });
 
         console.log("Extracted text chunks:", textChunks);
@@ -67,7 +78,36 @@ const UploadForm: React.FC = () => {
   };
   return (
     <div>
-      <input type="file" accept="application/pdf" onChange={handleFileChange} />
+      <div>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileChange}
+        />
+      </div>
+      {fileUrl && (
+        <>
+          <div>
+            <label htmlFor="fileTitle">File Title:</label>
+            <input
+              type="text"
+              id="fileTitle"
+              value={fileTitle}
+              onChange={(e) => setFileTitle(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="sourceUrl">Source URL (optional):</label>
+            <input
+              type="url"
+              id="sourceUrl"
+              value={sourceUrl}
+              onChange={(e) => setSourceUrl(e.target.value)}
+            />
+          </div>
+        </>
+      )}
       {error && <p className="text-red-500">{error}</p>}
       {fileUrl && (
         <div className="mt-4">

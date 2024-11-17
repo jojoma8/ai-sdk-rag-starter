@@ -1,10 +1,16 @@
+import { createFile } from "@/actions/files";
 import { createResource } from "@/actions/resources";
 import { NextRequest, NextResponse } from "next/server";
 import pdfParse from "pdf-parse";
 
 export async function POST(req: NextRequest) {
   try {
-    const { chunks }: { chunks: string[] } = await req.json();
+    const {
+      chunks,
+      fileTitle,
+      sourceUrl,
+    }: { chunks: string[]; fileTitle: string; sourceUrl: string } =
+      await req.json();
 
     if (!chunks || !Array.isArray(chunks) || chunks.length === 0) {
       return NextResponse.json(
@@ -14,9 +20,12 @@ export async function POST(req: NextRequest) {
     }
 
     console.log("Received text chunks: ", chunks);
+    console.log("Received file name:", fileTitle);
+
+    const fileId = await createFile({ fileTitle, sourceUrl });
 
     for (const chunk of chunks) {
-      await createResource({ content: chunk });
+      await createResource({ fileId, content: chunk });
     }
 
     return NextResponse.json({
