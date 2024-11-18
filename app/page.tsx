@@ -12,6 +12,7 @@ export default function Chat() {
     maxSteps: 3,
   });
 
+  console.log("test");
   // const [uploadSuccess, setUploadSuccess] = useState(false);
 
   // const handleUploadSuccess = () => {
